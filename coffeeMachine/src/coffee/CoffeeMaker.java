@@ -1,3 +1,5 @@
+package coffee;
+
 public class CoffeeMaker {
 
     private Ingredients resources = new Ingredients(1000, 800, 500);
