@@ -1,33 +1,39 @@
 package coffee;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Menu {
 
-    private ArrayList<MenuItem> menu;
+    private List<MenuItem> items = new ArrayList<>();
 
     public Menu() {
-        menu = new ArrayList<>();
-        menu.add(new MenuItem("latte", 200, 150, 24, 2.5));
-        menu.add(new MenuItem("espresso", 50, 0, 18, 1.5));
-        menu.add(new MenuItem("cappuccino", 250, 50, 24, 3.0));
+        items.add(new MenuItem("espresso", new BigDecimal("1.50"),
+                new Ingredients(50, 0, 18)));
+
+        items.add(new MenuItem("latte", new BigDecimal("2.50"),
+                new Ingredients(200, 150, 24)));
+
+        items.add(new MenuItem("cappuccino", new BigDecimal("3.00"),
+                new Ingredients(250, 50, 24)));
     }
 
-    public String getItems() {
-        StringBuilder options = new StringBuilder();
-        for (MenuItem item : menu) {
-            options.append(item.getName()).append("/");
+    public String getItemsString() {
+        StringBuilder sb = new StringBuilder();
+        for (MenuItem item : items) {
+            sb.append(item.getName()).append("/");
         }
-        return options.toString();
+        return sb.substring(0, sb.length() - 1);
     }
 
-    public MenuItem findDrink(String orderName) {
-        for (MenuItem item : menu) {
-            if (item.getName().equals(orderName)) {
+    public MenuItem findDrink(String name) {
+        for (MenuItem item : items) {
+            if (item.getName().equalsIgnoreCase(name)) {
                 return item;
             }
         }
-        System.out.println("Sorry that item is not available.");
         return null;
     }
 }
+
