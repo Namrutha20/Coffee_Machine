@@ -1,41 +1,64 @@
 package coffee;
 
+
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        MoneyMachine moneyMachine = new MoneyMachine();
-        CoffeeMaker coffeeMaker = new CoffeeMaker();
-        Menu menu = new Menu();
 
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        Menu menu = new Menu();
+        CoffeeMaker maker = new CoffeeMaker();
+        MoneyMachine money = new MoneyMachine();
+
         boolean isOn = true;
 
         while (isOn) {
-            String options = menu.getItems();
-            System.out.print("What would you like? (" + options + "): ");
+            System.out.print("What would you like? (" + menu.getItemsString() + "): ");
             String choice = sc.nextLine();
 
-            if (choice.equals("off")) {
+            if (choice.equalsIgnoreCase("off")) {
                 isOn = false;
+            }
+            else if (choice.equalsIgnoreCase("report")) {
+                Ingredients r = maker.getResources();
+                System.out.println("\n--- MACHINE REPORT ---");
+                System.out.println("Water: " + r.getWater());
+                System.out.println("Milk: " + r.getMilk());
+                System.out.println("Coffee: " + r.getCoffee());
+                System.out.println("Profit: $" + money.getProfit());
+                System.out.println("----------------------\n");
+            }
+            else if (choice.equalsIgnoreCase("refill")) {
+                System.out.println("Refill resources...");
+                System.out.print("Add water: ");
+                int w = Integer.parseInt(sc.nextLine());
+                System.out.print("Add milk: ");
+                int m = Integer.parseInt(sc.nextLine());
+                System.out.print("Add coffee: ");
+                int c = Integer.parseInt(sc.nextLine());
 
-            } else if (choice.equals("report")) {
-                coffeeMaker.report();
-                moneyMachine.report();
+                maker.refill(new Ingredients(w, m, c));
+                System.out.println("Resources refilled!\n");
+            }
+            else {
+                MenuItem item = menu.findDrink(choice);
+                if (item == null) {
+                    System.out.println("Invalid option\n");
+                    continue;
+                }
 
-            } else {
-                MenuItem drink = menu.findDrink(choice);
+                if (!maker.isResourceSufficient(item)) {
+                    System.out.println("Not enough resources\n");
+                    continue;
+                }
 
-                if (drink != null) {
-                    if (coffeeMaker.isResourceSufficient(drink)
-                            && moneyMachine.makePayment(drink.getCost(), sc)) {
-
-                        coffeeMaker.makeCoffee(drink);
-                    }
+                if (money.makePayment(item.getCost(), sc)) {
+                    maker.makeCoffee(item);
+                    System.out.println("Here is your " + item.getName() + " ☕\n");
                 }
             }
         }
-
         sc.close();
     }
 }
